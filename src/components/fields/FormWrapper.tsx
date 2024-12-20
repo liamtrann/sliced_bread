@@ -4,8 +4,8 @@ interface FormWrapperProps {
   children: React.ReactNode;
   title: string;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
-  formClassName?: string; // Custom className for the <form>
-  wrapperClassName?: string; // Custom className for the wrapper
+  formClassName?: string; 
+  wrapperClassName?: string;
 }
 
 const FormWrapper: React.FC<FormWrapperProps> = ({
