@@ -1,34 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, FormWrapper, Input } from "@/components";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Input, FormWrapper } from "@/components";
+import { OrderFormData, orderFormSchema } from "@/types/type";
 
 const OrderForm = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    quantity: "",
-    city: "",
-    state: "",
-    country: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<OrderFormData>({
+    resolver: zodResolver(orderFormSchema),
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: OrderFormData) => {
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -46,57 +42,47 @@ const OrderForm = () => {
   };
 
   return (
-    <FormWrapper title="Place Your Order">
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col space-y-4 w-full max-w-md"
-      >
-        <Input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleInputChange}
-          className="w-full"
-        />
-        <Input
-          type="number"
-          name="quantity"
-          placeholder="Quantity"
-          value={formData.quantity}
-          onChange={handleInputChange}
-          className="w-full"
-          required
-        />
-        <Input
-          type="text"
-          name="city"
-          placeholder="City"
-          required
-          value={formData.city}
-          onChange={handleInputChange}
-          className="w-full"
-        />
-        <Input
-          type="text"
-          name="state"
-          placeholder="State/Province"
-          required
-          value={formData.state}
-          onChange={handleInputChange}
-          className="w-full"
-        />
-        <Input
-          type="text"
-          name="country"
-          placeholder="Country"
-          required
-          value={formData.country}
-          onChange={handleInputChange}
-          className="w-full"
-        />
-        <Button type="submit">Place Order</Button>
-      </form>
+    <FormWrapper
+      title="Place Your Order"
+      onSubmit={handleSubmit(onSubmit)}
+      formClassName="space-y-4"
+    >
+      <Input
+        label="Name"
+        type="text"
+        placeholder="Name"
+        {...register("name")}
+        error={errors.name}
+      />
+      <Input
+        label="Quantity"
+        type="number"
+        placeholder="Quantity"
+        {...register("quantity", { valueAsNumber: true })}
+        error={errors.quantity}
+      />
+      <Input
+        label="City"
+        type="text"
+        placeholder="City"
+        {...register("city")}
+        error={errors.city}
+      />
+      <Input
+        label="State/Province"
+        type="text"
+        placeholder="State/Province"
+        {...register("state")}
+        error={errors.state}
+      />
+      <Input
+        label="Country"
+        type="text"
+        placeholder="Country"
+        {...register("country")}
+        error={errors.country}
+      />
+      <Button type="submit">Place Order</Button>
     </FormWrapper>
   );
 };

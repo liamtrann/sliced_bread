@@ -1,36 +1,33 @@
 import React from "react";
+import { FieldError } from "react-hook-form";
 
-interface InputProps {
-    type: string;
-    name: string;
-    placeholder?: string;
-    value: string | number;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    required?: boolean;
-    className?: string;
-  }
-  
-  const Input: React.FC<InputProps> = ({
-    type,
-    name,
-    placeholder = "",
-    value,
-    onChange,
-    required = false,
-    className = "",
-  }) => {
-    return (
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: FieldError;
+}
+
+const Input: React.FC<InputProps> = ({
+  label,
+  error,
+  className = "",
+  ...props
+}) => {
+  return (
+    <div className="flex flex-col space-y-1">
+      {label && (
+        <label htmlFor={props.name} className="font-medium">
+          {label}
+        </label>
+      )}
       <input
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        required={required}
-        className={`p-2 border rounded text-gray-800 ${className}`}
+        {...props}
+        className={`p-2 border rounded text-gray-800 ${
+          error ? "border-red-500" : "border-gray-300"
+        } ${className}`}
       />
-    );
-  };
-  
-  export default Input;
-  
+      {error && <p className="text-sm text-red-500">{error.message}</p>}
+    </div>
+  );
+};
+
+export default Input;
