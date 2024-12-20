@@ -7,8 +7,8 @@ export interface Beverage {
 }
 
 export const orderFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  quantity: z.number().positive("Quantity must be a positive number"),
+  name: z.string().optional(),
+  quantity: z.number().min(1, "Quantity must be at least 1").optional(),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State/Province is required"),
   country: z.string().min(1, "Country is required"),

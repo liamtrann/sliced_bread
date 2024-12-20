@@ -18,13 +18,26 @@ const OrderForm = () => {
   });
 
   const onSubmit = async (data: OrderFormData) => {
+    const { name, quantity, ...rest } = data;
+    // Handle empty name field
+    const customerName = data.name?.trim() === "" ? "Guest" : data.name;
+
+    // Handle empty quantity field
+    const orderQuantity = quantity || 1;
+
+    const orderDetails = {
+      name: customerName,
+      quantity: orderQuantity,
+      ...rest,
+    };
+
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(orderDetails),
       });
 
       if (!response.ok) {
@@ -50,35 +63,37 @@ const OrderForm = () => {
       <Input
         label="Name"
         type="text"
-        placeholder="Name"
+        placeholder="Optional"
         {...register("name")}
         error={errors.name}
       />
       <Input
         label="Quantity"
         type="number"
-        placeholder="Quantity"
-        {...register("quantity", { valueAsNumber: true })}
+        placeholder="Default by 1"
+        {...register("quantity", {
+          setValueAs: (v) => (v === "" ? undefined : parseInt(v)),
+        })}
         error={errors.quantity}
       />
       <Input
         label="City"
         type="text"
-        placeholder="City"
+        placeholder="Required"
         {...register("city")}
         error={errors.city}
       />
       <Input
         label="State/Province"
         type="text"
-        placeholder="State/Province"
+        placeholder="Required"
         {...register("state")}
         error={errors.state}
       />
       <Input
         label="Country"
         type="text"
-        placeholder="Country"
+        placeholder="Required"
         {...register("country")}
         error={errors.country}
       />
